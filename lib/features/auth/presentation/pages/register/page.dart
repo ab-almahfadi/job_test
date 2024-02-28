@@ -20,7 +20,6 @@ class RegisterPage extends StatelessWidget {
           EasyLoading.show(status: 'Loading...');
         } else if (state.status == AuthStatus.success) {
           EasyLoading.dismiss();
-          // Route ke Home Page
           EasyLoading.showToast('Success register!');
 
         } else if (state.status == AuthStatus.failure) {

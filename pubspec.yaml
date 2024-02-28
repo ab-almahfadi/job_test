@@ -41,8 +41,11 @@ dependencies:
   dartz: ^0.10.1
   hive: ^2.2.3
   flutter_easyloading: ^3.0.5
-  http: ^0.13.0
   azure_application_insights: ^3.1.0
+  flutter_web_plugins:
+    sdk: flutter
+  http: ^0.13.0
+
 
 
 dev_dependencies:

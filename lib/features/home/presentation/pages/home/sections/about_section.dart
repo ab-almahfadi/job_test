@@ -9,7 +9,12 @@ class _About extends StatelessWidget {
         birthday: state.user?.birthday ?? '',
         horoscope: state.user?.horoscope ?? '',
         zodiac: state.user?.zodiac ?? '',
+        height: state.user?.height?.toString() ?? '',
+        heightm: state.user?.heightm ?? '',
+        weight: state.user?.weight?.toString() ?? '',
+        weightm: state.user?.weightm ?? '',
         interest: state.user?.interests ?? [],
+        picker: state.user?.picker,
       );
     });
   }
@@ -21,14 +26,28 @@ class _AboutSection extends StatefulWidget {
     required this.birthday,
     required this.horoscope,
     required this.zodiac,
+    required this.height,
+    required this.heightm,
+    required this.weight,
+    required this.weightm,
     required this.interest,
+    this.picker,
+    this.imageKey,
+    // this.onImagePicked
   });
 
   final String name;
   final String birthday;
   final String horoscope;
+  final String height;
+  final String heightm;
+  final String weight;
+  final String weightm;
   final String zodiac;
   final List<String> interest;
+  final ImagePicker? picker;
+  final String? imageKey;
+  // final void Function(Uint8List imageData)? onImagePicked;
 
   @override
   State<_AboutSection> createState() => _AboutSectionState();
@@ -36,8 +55,13 @@ class _AboutSection extends StatefulWidget {
 
 class _AboutSectionState extends State<_AboutSection> {
   late bool _editAbout;
+  late ImagePicker _picker;
   late String _selectedValue;
+  late String _selectedHeight;
+  late String _selectedWeight;
   late List<String> _options;
+  late List<String> _heightOptions;
+  late List<String> _weightOptions;
   late TextEditingController _cName;
   late TextEditingController _cBirthday;
   late TextEditingController _cHoroscope;
@@ -47,15 +71,30 @@ class _AboutSectionState extends State<_AboutSection> {
   late GlobalKey<FormState> _formKey;
   late bool _isLoading;
   DateTime? _dateTime;
+  late String _imageKey;
+  Uint8List? _webImageBytes;
+  String? _imagePath;
+  // void Function(Uint8List imageData)? onImagePicked;
 
   @override
   void initState() {
     _editAbout = false;
     _selectedValue = 'Male';
+    _selectedHeight = "inch";
+    _selectedWeight = "ib";
     _options = [
       'Male',
       'Female',
     ];
+    _heightOptions = [
+      "cm",
+      "inch",
+    ];
+    _weightOptions = [
+      "kg",
+      "ib",
+    ];
+    _picker = widget.picker ?? ImagePicker();
     _cName = TextEditingController();
     _cName.text = widget.name;
     _cBirthday = TextEditingController();
@@ -65,9 +104,9 @@ class _AboutSectionState extends State<_AboutSection> {
     _cZodiac = TextEditingController();
     _cZodiac.text = widget.zodiac;
     _cHeight = TextEditingController();
-    _cHeight.text = '';
+    _cHeight.text = widget.height;
     _cWeight = TextEditingController();
-    _cWeight.text = '';
+    _cWeight.text = widget.weight;
     _formKey = GlobalKey();
     _isLoading = false;
     super.initState();
@@ -80,12 +119,15 @@ class _AboutSectionState extends State<_AboutSection> {
     if (!_isLoading) {
       setState(() {
         _isLoading = true;
+        // String combinedHeight = "${_cHeight.text} ${_selectedHeight}";
         context.read<HomeBloc>().add(UpdateProfileEvent(
             params: UpdateProfileParams(
                 name: _cName.text,
                 interests: widget.interest,
                 height: int.parse(_cHeight.text),
                 weight: int.parse(_cWeight.text),
+                heightm: _selectedHeight,
+                weightm: _selectedWeight,
                 birthday: _cBirthday.text)));
       });
     }
@@ -158,7 +200,7 @@ class _AboutSectionState extends State<_AboutSection> {
                         !_editAbout
                             ? widget.name.isEmpty
                                 ? Text(
-                                    'Add in your your to help others know you better',
+                                    'Add in your profile to help others know you better',
                                     style: AppTextStyle.medium(
                                         color: AppColors()
                                             .hWhite
@@ -231,7 +273,7 @@ class _AboutSectionState extends State<_AboutSection> {
                                             ),
                                           ),
                                           Text(
-                                            '${state.user?.height} cm',
+                                            '${state.user?.height} $_selectedHeight',
                                             style: AppTextStyle.medium(),
                                           )
                                         ],
@@ -248,7 +290,7 @@ class _AboutSectionState extends State<_AboutSection> {
                                             ),
                                           ),
                                           Text(
-                                            '${state.user?.weight} kg',
+                                            '${state.user?.weight} $_selectedWeight',
                                             style: AppTextStyle.medium(),
                                           )
                                         ],
@@ -262,24 +304,99 @@ class _AboutSectionState extends State<_AboutSection> {
                                       CrossAxisAlignment.stretch,
                                   children: [
                                     GestureDetector(
-                                      onTap: () {},
+                                      onTap: () async {
+                                        try {
+                                          // Pick an image
+                                          // final ImagePicker _picker = ImagePicker();
+                                          final XFile? image =
+                                              await _picker.pickImage(
+                                                  source: ImageSource
+                                                      .gallery); // or ImageSource.camera
+
+                                          if (image != null) {
+                                            // For Web: Use the image file directly or upload it
+                                            if (kIsWeb) {
+                                              // Read the file as bytes
+                                              Uint8List imageBytes =
+                                                  await image.readAsBytes();
+                                              String base64Image =
+                                                  base64Encode(imageBytes);
+
+                                              // Define a unique key for the image
+                                              _imageKey =
+                                                  'stored_image_${DateTime.now().millisecondsSinceEpoch}';
+                                              // Store the Base64-encoded string in LocalStorage with the unique key
+                                              html.window.localStorage.clear();
+                                              html.window
+                                                      .localStorage[_imageKey] =
+                                                  base64Image;
+                                              // Print the "path" (key) where the image is stored
+                                              // _webImageBytes = base64Decode(base64Image);
+                                              setState(() {
+                                                _webImageBytes = imageBytes;
+                                              });
+                                              // onImagePicked!(imageBytes);
+                                              //             [
+                                              //   Padding(
+                                              //     padding: const EdgeInsets.all(8.0),
+                                              //     child: Image.memory(imageBytes),
+                                              //   ),
+                                              // ];
+                                              ;
+                                              print(
+                                                  "Image stored with key: $_imageKey");
+                                            } else {
+                                              // For mobile or desktop: Save the image locally
+                                              final Directory directory =
+                                                  await getApplicationDocumentsDirectory();
+                                              final String imagePath =
+                                                  path.join(
+                                                      directory.path,
+                                                      path.basename(
+                                                          image.path));
+                                              final File newImage =
+                                                  await File(image.path)
+                                                      .copy(imagePath);
+                                              setState(() {
+                                                _imagePath = imagePath;
+                                              });
+                                              print(
+                                                  "Image saved to $imagePath");
+                                            }
+                                          }
+                                        } catch (e) {
+                                          print(e);
+                                        }
+                                      },
                                       child: Row(
                                         children: [
-                                          Container(
-                                            height: 57,
-                                            width: 57,
-                                            padding: const EdgeInsets.symmetric(
-                                                horizontal: 18),
-                                            decoration: BoxDecoration(
-                                              borderRadius:
-                                                  const BorderRadius.all(
-                                                      Radius.circular(17)),
-                                              color: AppColors()
-                                                  .hWhite
+                                          ClipRRect(
+                                            borderRadius: BorderRadius.all(
+                                                Radius.circular(17)),
+                                            child: Container(
+                                              height: 57,
+                                              width: 57,
+                                              color: Colors.white
                                                   .withOpacity(0.08),
+                                              child: FittedBox(
+                                                fit: BoxFit
+                                                    .cover, // This will ensure the image covers the container area
+                                                child: _imagePath != null
+                                                    ? Image.file(
+                                                        File(_imagePath!),
+                                                        width: 57,
+                                                        height: 57)
+                                                    : _webImageBytes != null
+                                                        ? Image.memory(
+                                                            _webImageBytes!,
+                                                            width: 57,
+                                                            height: 57)
+                                                        : SvgPicture.asset(
+                                                            'assets/icons/add_ic.svg',
+                                                            width: 25,
+                                                            height: 25),
+                                              ),
                                             ),
-                                            child: SvgPicture.asset(
-                                                'assets/icons/add_ic.svg'),
                                           ),
                                           const SizedBox(width: 15),
                                           Text(
@@ -291,10 +408,17 @@ class _AboutSectionState extends State<_AboutSection> {
                                       ),
                                     ),
                                     const SizedBox(height: 29),
+                                    // if (_webImageBytes != null) ...[
+                                    //   Padding(
+                                    //     padding: const EdgeInsets.all(8.0),
+                                    //     child: Image.memory(_webImageBytes!),
+                                    //   ),
+                                    // ],
+
                                     _FormSection(
                                       controller: _cName,
                                       title: 'Display name:',
-                                      hint: 'Enter name',
+                                      hintText: 'Enter name',
                                       readOnly: false,
                                     ),
                                     const SizedBox(height: 12),
@@ -388,7 +512,7 @@ class _AboutSectionState extends State<_AboutSection> {
                                     _FormSection(
                                       controller: _cBirthday,
                                       title: 'Birthday:',
-                                      hint: 'DD MM YYYY',
+                                      hintText: 'DD MM YYYY',
                                       readOnly: true,
                                       onTap: () async {
                                         await showDatePicker(
@@ -413,33 +537,49 @@ class _AboutSectionState extends State<_AboutSection> {
                                     _FormSection(
                                       controller: _cHoroscope,
                                       title: 'Horoscope:',
-                                      hint: '--',
+                                      hintText: '--',
                                       readOnly: true,
                                     ),
                                     const SizedBox(height: 12),
                                     _FormSection(
                                       controller: _cZodiac,
                                       title: 'Zodiac',
-                                      hint: '--',
+                                      hintText: '--',
                                       readOnly: true,
                                     ),
                                     const SizedBox(height: 12),
                                     _FormSection(
-                                      controller: _cHeight,
-                                      title: 'Height',
-                                      hint: 'Add height',
+                                      title: 'Height: ',
+                                      hintText: 'Add height',
                                       readOnly: false,
+                                      controller: _cHeight,
+                                      dropdownOptions: _heightOptions,
+                                      selectedValue: _selectedHeight,
+                                      onDropdownChanged: (newValue1) {
+                                        setState(() {
+                                          _selectedHeight = newValue1!;
+                                        });
+                                      },
                                     ),
                                     const SizedBox(height: 12),
                                     _FormSection(
-                                      controller: _cWeight,
-                                      title: 'Weight',
-                                      hint: 'Add weight',
+                                      title: 'Weight:',
+                                      hintText: 'Add weight',
                                       readOnly: false,
+                                      controller: _cWeight,
+                                      dropdownOptions: _weightOptions,
+                                      selectedValue: _selectedWeight,
+                                      onDropdownChanged: (newValue2) {
+                                        setState(() {
+                                          _selectedWeight = newValue2!;
+                                        });
+                                        setState(() {
+                                          debugPrint(_selectedWeight);
+                                        });
+                                      },
                                     ),
                                   ],
-                                ),
-                              ),
+                                )),
                         const SizedBox(height: 10)
                       ],
                     );

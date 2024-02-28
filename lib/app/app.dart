@@ -68,7 +68,7 @@ class _AppWidgetState extends State<_AppWidget> {
       navigatorObservers: [routeObserver],
       onGenerateRoute: route,
       home: const LoginPage(),
-      builder: EasyLoading.init(),
+      // builder: EasyLoading.init(),
     );
   }
 }

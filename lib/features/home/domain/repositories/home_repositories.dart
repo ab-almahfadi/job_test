@@ -9,7 +9,9 @@ abstract class HomeRepository {
     required String name,
     String? birthday,
     int? height,
+    String? heightm,
     int? weight,
+    String? weightm,
     List<String>? interests,
   });
 }

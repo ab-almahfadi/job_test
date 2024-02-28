@@ -12,7 +12,9 @@ class HomeRepositoryImpl implements HomeRepository {
     required String name,
     String? birthday,
     int? height,
+    String? heightm,
     int? weight,
+    String? weightm,
     List<String>? interests,
   }) async {
     try {
@@ -20,7 +22,9 @@ class HomeRepositoryImpl implements HomeRepository {
         name: name,
         birthday: birthday,
         height: height,
+        heightm: heightm,
         weight: weight,
+        weightm: weightm,
         interests: interests
       );
 

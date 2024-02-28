@@ -7,7 +7,9 @@ abstract class HomeApiDataSource {
     required String name,
     String? birthday,
     int? height,
+    String? heightm,
     int? weight,
+    String? weightm,
     List<String>? interests,
   });
 }
@@ -22,7 +24,9 @@ class HomeApiDataSourceImpl implements HomeApiDataSource {
     required String name,
     String? birthday,
     int? height,
+    String? heightm,
     int? weight,
+    String? weightm,
     List<String>? interests,
   }) async {
     try {
@@ -30,7 +34,9 @@ class HomeApiDataSourceImpl implements HomeApiDataSource {
         'name': name,
         "birthday": birthday,
         "height": height,
+        "heightm": heightm,
         "weight": weight,
+        "weightm": weightm,
         "interests": interests,
       });
 

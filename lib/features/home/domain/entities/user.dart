@@ -1,4 +1,5 @@
 import 'package:equatable/equatable.dart';
+import 'package:image_picker/image_picker.dart';
 
 class User extends Equatable {
   final String email;
@@ -8,8 +9,11 @@ class User extends Equatable {
   final String? horoscope;
   final String? zodiac;
   final int? height;
+  final String? heightm;
   final int? weight;
+  final String? weightm;
   final List<String>? interests;
+  final ImagePicker? picker;
 
   const User({
     required this.email,
@@ -19,8 +23,11 @@ class User extends Equatable {
     this.horoscope,
     this.zodiac,
     this.height,
+    this.heightm,
     this.weight,
+    this.weightm,
     this.interests,
+    this.picker,
   });
 
   @override
@@ -32,7 +39,11 @@ class User extends Equatable {
         horoscope,
         zodiac,
         height,
+        heightm,
         weight,
+        weightm,
         interests,
       ];
+
+  
 }

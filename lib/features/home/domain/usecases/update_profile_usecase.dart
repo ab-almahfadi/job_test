@@ -17,7 +17,9 @@ class UpdateProfileUseCase
       name: params.name,
       birthday: params.birthday,
       height: params.height,
+      heightm: params.heightm,
       weight: params.weight,
+      weightm: params.weightm,
       interests: params.interests,
     );
   }
@@ -28,13 +30,17 @@ class UpdateProfileParams extends Equatable {
       {required this.name,
       this.birthday,
       this.height,
+      this.heightm,
       this.weight,
+      this.weightm,
       this.interests});
 
   final String name;
   final String? birthday;
   final int? height;
+  final String? heightm;
   final int? weight;
+  final String? weightm;
   final List<String>? interests;
 
   @override

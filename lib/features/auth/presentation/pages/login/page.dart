@@ -22,7 +22,6 @@ class LoginPage extends StatelessWidget {
         } else if (state.status == AuthStatus.authorized) {
           context.read<AuthBloc>().add(ProfileAuthEvent());
           EasyLoading.dismiss();
-          // Route ke Home Page
           Navigator.pushNamedAndRemoveUntil(
               context, HomePage.routeName, (route) => false);
         } else if (state.status == AuthStatus.unAuthorized) {
@@ -49,8 +48,6 @@ class LoginPage extends StatelessWidget {
             ),
             child: ListView(
               children: [
-                const SizedBox(height: 37),
-                const BackAuth(),
                 const SizedBox(height: 60),
                 const TextHeaderAuth(text: 'Login'),
                 const SizedBox(height: 25),
@@ -66,7 +63,6 @@ class LoginPage extends StatelessWidget {
                     ),
                     GestureDetector(
                       onTap: () {
-                        // Route ke Register Page
                         Navigator.pushNamed(context, RegisterPage.routeName);
                       },
                       child: Image.asset(
